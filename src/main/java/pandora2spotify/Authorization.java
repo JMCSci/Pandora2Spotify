@@ -23,7 +23,7 @@ public class Authorization {
 	Map<String, String> auth = new HashMap<String, String>();
 	private HashMap<String, String> refreshMap;
 	private HashMap<String, String> tokens;
-	private Secrets secrets;
+	public Secrets secrets;
 
 	
 	Authorization() throws Exception {
@@ -195,5 +195,11 @@ public class Authorization {
 	String getToken(String tokenRequest) {
 		return tokens.get(tokenRequest);
 	}
+	
+	public Secrets getSecrets() {
+		return this.secrets;
+	}
+
+	
 
 }

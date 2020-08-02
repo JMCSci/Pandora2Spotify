@@ -37,12 +37,14 @@ public class PandoraRequests {
 	List<String> songs = new LinkedList<String>();
 	ArrayDeque<String> ids = new ArrayDeque<String>();
 	ArrayDeque<String> formattedSongs = new ArrayDeque<String>();
+	Secrets pandoraSecrets;
 	
-	PandoraRequests() throws Exception {
+	PandoraRequests(Secrets secrets) throws Exception {
 		retrieveThumbsUp();		// Uses browser to get thumbs up tracks from Pandora by refreshing page and retrieving POST responses
 		getTR();				// Parse POST responses for TR objects containing tracks
 		jsonToList();			// Uses TR id to get tracks located in JSON responses
 		formatForQuery();		// Format the strings from songs list for use in Spotify track search		
+		pandoraSecrets = secrets;
 	}
 	
 	void retrieveThumbsUp() throws Exception {
@@ -68,11 +70,11 @@ public class PandoraRequests {
 		driver.get("https://www.pandora.com/account/sign-in");
 		Thread.sleep(5000);
 		// DONT FORGET TO REMOVE USERNAME AND PASSWORD -- pass in with a File and Scanner 
-		driver.findElement(By.name("username")).sendKeys("");			// enter username
-		driver.findElement(By.name("password")).sendKeys("");			// enter password
-		driver.findElement(By.className("FormButtonSubmit")).click();						// click log-in
-		Thread.sleep(5000);																	// wait for page to load
-		driver.get("https://www.pandora.com/profile/thumbs/tarius12");						// go to thumbs up
+		driver.findElement(By.name("username")).sendKeys(pandoraSecrets.getPandoraUsername());	// enter username
+		driver.findElement(By.name("password")).sendKeys(pandoraSecrets.getPandoraPassword());	// enter password
+		driver.findElement(By.className("FormButtonSubmit")).click();							// click log-in
+		Thread.sleep(5000);																		// wait for page to load
+		driver.get("https://www.pandora.com/profile/thumbs/tarius12");							// go to thumbs up
 		/* Scroll down */
 		/*
 		 * THIS IS IN A LOOP 
@@ -96,7 +98,7 @@ public class PandoraRequests {
 		System.out.println("Number of tracks: " + entries.size());
 		
 		for (HarEntry entry : entries) {
-			/* Get only the POST requests */
+			/* Only add the POST requests */
 			   if(entry.getRequest().getUrl().matches("https://www.pandora.com/api/v4/catalog/annotateObjectsSimple")){
 				   // Response will have all of the TR's
 				   // Insert each POST response into a JSONObject
