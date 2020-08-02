@@ -40,11 +40,11 @@ public class PandoraRequests {
 	Secrets pandoraSecrets;
 	
 	PandoraRequests(Secrets secrets) throws Exception {
+		pandoraSecrets = secrets;
 		retrieveThumbsUp();		// Uses browser to get thumbs up tracks from Pandora by refreshing page and retrieving POST responses
 		getTR();				// Parse POST responses for TR objects containing tracks
 		jsonToList();			// Uses TR id to get tracks located in JSON responses
 		formatForQuery();		// Format the strings from songs list for use in Spotify track search		
-		pandoraSecrets = secrets;
 	}
 	
 	void retrieveThumbsUp() throws Exception {
@@ -70,17 +70,16 @@ public class PandoraRequests {
 		driver.get("https://www.pandora.com/account/sign-in");
 		Thread.sleep(5000);
 		// DONT FORGET TO REMOVE USERNAME AND PASSWORD -- pass in with a File and Scanner 
-		driver.findElement(By.name("username")).sendKeys(pandoraSecrets.getPandoraUsername());	// enter username
-		driver.findElement(By.name("password")).sendKeys(pandoraSecrets.getPandoraPassword());	// enter password
-		driver.findElement(By.className("FormButtonSubmit")).click();							// click log-in
-		Thread.sleep(5000);																		// wait for page to load
-		driver.get("https://www.pandora.com/profile/thumbs/tarius12");							// go to thumbs up
-		/* Scroll down */
+		driver.findElement(By.name("username")).sendKeys(pandoraSecrets.getPandoraUsername());	// Enters username
+		driver.findElement(By.name("password")).sendKeys(pandoraSecrets.getPandoraPassword());	// Enters password
+		driver.findElement(By.className("FormButtonSubmit")).click();							// Clicks log-in
+		Thread.sleep(5000);																		// Waits for page to load
+		driver.get("https://www.pandora.com/profile/thumbs/tarius12");							// Goes to Thumbs Up page
+		/* Scrolls down */
 		/*
 		 * THIS IS IN A LOOP 
 		 * YOU ALSO MUST KNOW WHEN YOU REACH THE BOTTOM OF THE PAGE 
 		 */
-		
 		Thread.sleep(2500);
 		JavascriptExecutor js =(JavascriptExecutor) driver;
 		driver.manage().window().maximize();
@@ -88,10 +87,10 @@ public class PandoraRequests {
 		proxy.newHar("Pandora Thumbs Up");
 		int size = 1;
 		for(int i = 0; i < size; i++) {	// a loop of 5 had 37 TR's (on average each TR has 10 tracks)
-			System.out.print("Page refresh: " + i + " of " + size + "\r");
+			System.out.print("Page refresh: " + (i + 1) + " of " + size + "\r");
 			js.executeScript("window.scrollBy(0,1324)");					// scroll down
 			Thread.sleep(1500);
-			proxy.newPage(); 						// next page  Har -- should be in loop
+			proxy.newPage(); 						// next page - Har
 		}
 			
 		List<HarEntry> entries = proxy.getHar().getLog().getEntries();

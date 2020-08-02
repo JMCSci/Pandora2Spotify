@@ -13,23 +13,14 @@ package pandora2spotify;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Scanner;
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openqa.selenium.firefox.FirefoxDriver;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 public class SpotifyAPI {
 	private LinkedHashMap<String, String> currentUser = new LinkedHashMap<String, String>();
@@ -239,7 +230,7 @@ public class SpotifyAPI {
 		out.write(postRequest.getBytes());
 		out.close();
 		
-		System.out.println(conn.getResponseCode());
+//		System.out.println(conn.getResponseCode());
 	}
 	
 	
@@ -267,22 +258,16 @@ public class SpotifyAPI {
 		// Get the size of ids array
 		int size = pandora.idListSize();
 		
-		if(size / 1000 > 0) {
-			System.out.println("at least 1000");
-			// Pop 100 off the queue
-			for(int i = 0; i < 100; i++) {
-				arr.put(i, prefix +  pandora.getIds());		// Add tracks
-			}
-		} else if(size / 100 > 0) {
+		if(size / 100 > 0) {
 			System.out.println("at least 100");
-			// Pop 100 off the queue
+			// Pop 100 tracks from the queue
 			for(int i = 0; i < 100; i++) {
-				arr.put(i, prefix +  pandora.getIds());		// Add tracks
+				arr.put(i, prefix +  pandora.getIds());		// Add 100 tracks to JSON array
 			}
 		} else {
 			// Pop everything off of the queue
 			for(int i = 0; i < size; i++) {
-				arr.put(i, prefix +  pandora.getIds());		// Add tracks
+				arr.put(i, prefix +  pandora.getIds());		// Add remaining tracks to JSON array
 			}
 		}
 		JSONObject o = new JSONObject();					// Create JSONObject
