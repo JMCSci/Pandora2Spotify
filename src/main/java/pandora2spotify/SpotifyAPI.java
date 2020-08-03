@@ -276,9 +276,7 @@ public class SpotifyAPI {
 		jsonArray = jsonArray.replaceAll("//s","");			// Remove whitespace						
 		return jsonArray;									// Return the string to addToPlaylist method
 	}
-	
-	
-	
+
 	void clearJSON() {
 		json = null;
 	}

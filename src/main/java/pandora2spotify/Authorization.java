@@ -83,7 +83,6 @@ public class Authorization {
 		driver.findElement(By.id("login-password")).sendKeys(secrets.getSpotifyPassword());
 		driver.findElement(By.id("login-button")).click();
 		
-		
 		/*  Wait for app authorization */
 		while(code == null) {
 			Thread.sleep(2000);		// 2 seconds
@@ -91,21 +90,26 @@ public class Authorization {
 				code = driver.getCurrentUrl();
 			}
 		}
-		
 		driver.quit();
 		reader.close();
 	}
 	
 	// authorization: Save authorization code and state to hash map - used to request access token
 	void authorization() {
-		if(code.contains("code")){
+		/* APP AUTHORIZATION ACCEPTED */
+		if(code.contains("code")) {
 			String [] tokens1 = code.split("code=");
 			String [] tokens2 = tokens1[1].split("&");
 			String [] tokens3 = code.split("state=");
 			auth.put("code",tokens2[0]);
 			auth.put("state",tokens3[1]);
 		} else {
-			System.out.println("ERROR");
+			/* APP AUTHORIZATION DENIED
+			 * Code variable will not have "code" in it if user does not accept 
+			 * URL/code variable will contain redirect URL - https://www.spotify.com */
+			System.out.println("\nSpotify app authorization denied");
+			System.out.println("The program will now exit");
+			System.exit(-1);
 		}		
 	}
 	
