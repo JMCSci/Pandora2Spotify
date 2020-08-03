@@ -10,6 +10,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.google.gson.Gson;
@@ -17,7 +19,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class Authorization {
 	String state;
-	String code;
+	String code = null;
 	String json;
 	int request = 0;
 	Map<String, String> auth = new HashMap<String, String>();
@@ -76,9 +78,19 @@ public class Authorization {
 		FirefoxDriver driver = new FirefoxDriver();
 		driver.get(conn.getURL().toString());
 		
-		/*  Wait for authorization */
-		Thread.sleep(20000);		// 20 seconds	
-		code = driver.getCurrentUrl();
+		/* Automatically fill in Spotify user information */
+		driver.findElement(By.id("login-username")).sendKeys(secrets.getSpotifyUsername());
+		driver.findElement(By.id("login-password")).sendKeys(secrets.getSpotifyPassword());
+		driver.findElement(By.id("login-button")).click();
+		
+		
+		/*  Wait for app authorization */
+		while(code == null) {
+			Thread.sleep(2000);		// 2 seconds
+			if(!driver.getCurrentUrl().contains("response_type")) {		// Check if original URL has changed
+				code = driver.getCurrentUrl();
+			}
+		}
 		
 		driver.quit();
 		reader.close();

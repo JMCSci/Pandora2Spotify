@@ -50,15 +50,15 @@ public class SpotifyAPI {
 		 * Array will be used in POST request to add songs
 		 */
 		int count = 0;
+		int totalSongs = pandora.idListSize();
 		while(pandora.idListSize() > 0) {
 			System.out.println("Song list size: " + pandora.idListSize());
 			count += 1;
 			String songs = createJSONArray();
 			addToPlaylist(songs);
 			Thread.sleep(1250);
-			System.out.print(count + "\r");
+			System.out.print(count + " of " + totalSongs + " added to playlist" + "\r");
 		}
-		System.out.println("Your Pandora songs have been successfully migrated to Spotify");
 	}
 	
 	// addCurrentUser: Adds current user data to HashMap

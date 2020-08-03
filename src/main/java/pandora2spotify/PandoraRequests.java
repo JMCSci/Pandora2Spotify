@@ -32,7 +32,7 @@ import net.lightbody.bmp.proxy.CaptureType;
 
 
 public class PandoraRequests {
-	List<String> postRequest = new LinkedList<String>();
+	List<String> postResponse = new LinkedList<String>();
 	List<String> tr = new LinkedList<String>();
 	List<String> songs = new LinkedList<String>();
 	ArrayDeque<String> ids = new ArrayDeque<String>();
@@ -48,15 +48,18 @@ public class PandoraRequests {
 	}
 	
 	void retrieveThumbsUp() throws Exception {
-		BrowserMobProxy proxy = new BrowserMobProxyServer();
+		/* Get HAR files from browser since Pandora API doesn't 
+		 * provide a function for retrieving a user's "Thumbs" list
+		 */
+		BrowserMobProxy proxy = new BrowserMobProxyServer();		   // Proxy server used to get HAR files using Selenium 
 		proxy.setTrustAllServers(true);
 		proxy.start();
 		
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
 		
 		String hostIp = Inet4Address.getLocalHost().getHostAddress();
-		seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());
-		seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());
+		seleniumProxy.setHttpProxy(hostIp + ":" + proxy.getPort());		// Set proxy port for Selenium
+		seleniumProxy.setSslProxy(hostIp + ":" + proxy.getPort());		// Set proxy port for Selenium 
 		
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
@@ -90,7 +93,7 @@ public class PandoraRequests {
 			System.out.print("Page refresh: " + (i + 1) + " of " + size + "\r");
 			js.executeScript("window.scrollBy(0,1324)");					// scroll down
 			Thread.sleep(1500);
-			proxy.newPage(); 						// next page - Har
+			proxy.newPage(); 						// next page - HAR
 		}
 			
 		List<HarEntry> entries = proxy.getHar().getLog().getEntries();
@@ -103,24 +106,29 @@ public class PandoraRequests {
 				   // Insert each POST response into a JSONObject
 				   // TR represents each JSON array object
 				   // A JSON array object is a track and its metadata
-				   postRequest.add(entry.getResponse().getContent().getText().toString());
+				   postResponse.add(entry.getResponse().getContent().getText().toString());
 			   }
 			}
 		proxy.stop();
 		driver.close();
 	}
 	
+	/* Gets the TR objects
+	 * Each TR object represents a track 
+	 * TR's are used when looking in JSON response to retrieve track info 
+	 * Track info includes: track and artist names
+	 */
 	void getTR() {
 		String temp;
-		int postRequestSize = postRequest.size();
+		int postResponseSize = postResponse.size();
 		int i = 0;
 
-		while(i < postRequestSize) {
-			String json = postRequest.get(i);
+		while(i < postResponseSize) {
+			String json = postResponse.get(i);
 			temp = json.substring(json.indexOf("TR:"), json.indexOf("\":"));
 			tr.add(temp);
 			// Slice up to next TR in JSON
-			json = postRequest.get(i);
+			json = postResponse.get(i);
 			json = json.substring(json.indexOf("\"artistName\":"));
 			String [] tokens1 = json.split("},\"TR:");
 			int size = tokens1.length;				// length of tokens1
@@ -136,16 +144,19 @@ public class PandoraRequests {
 		System.out.println("Total: " + tr.size());
 	}
 	
-	/* List elements used to search Spotify to get track ids */
+	/* Convert responses in list to JSON object 
+	 * Parse JSON responses for song and artist names, URLify them, and add them to List 
+	 * For use in GET request when searching for tracks and retrieving their ids 
+	 */
 	 void jsonToList() throws Exception {
 		File file = new File("PandoraSongs");
-		FileOutputStream out = new FileOutputStream(file);
-		int size = postRequest.size();
+		FileOutputStream out = new FileOutputStream(file);	// Output track and artist names to a file
+		int size = postResponse.size();
 		int JSONlength = 0;
 		int trCount = 0;
 		// GET POST REQUEST
 		for(int i = 0; i < size; i++) {
-			StringBuilder har = new StringBuilder(postRequest.get(i));
+			StringBuilder har = new StringBuilder(postResponse.get(i));
 			// CREATE JSON object
 			JSONObject obj = new JSONObject(har.toString());
 			// GET THE LENGTH OF THE JSON RESPONSE
@@ -162,10 +173,12 @@ public class PandoraRequests {
 			
 		}
 		out.close();
-
 	}
 	 
-	 // formatForQuery: Format the strings from songs list for use in Spotify track search
+	 /* formatForQuery: Format the URLifed strings 
+	 *  Removes and replaces whitespace, parenthesis, and apostrophes from string
+	 *  For use in Spotify GET request track search
+	 */
 	 void formatForQuery() {
 		 System.out.println(songs.size());
 			Iterator<String> iterator = songs.iterator();

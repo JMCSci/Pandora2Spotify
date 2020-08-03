@@ -1,12 +1,18 @@
 package testing;
 
 import java.io.Console;
+import java.util.Scanner;
 
 public class EnterPassword {
-	public static void main(String[] args) {
-		Console console = System.console();
-		char [] arr = console.readPassword(); 
-//		System.out.println(arr);
+	public static void main(String[] args) throws Exception{
+		String code = null;
+		while(code == null) {
+			Thread.sleep(2000);
+			System.out.println("code");
+		}
+//		Console console = System.console();
+//		char [] arr = console.readPassword(); 
+////		System.out.println(arr);
 		
 		
 	}

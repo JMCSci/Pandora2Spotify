@@ -7,12 +7,15 @@ import java.util.Scanner;
 public class Secrets {
 	private String clientID;
 	private String clientSecret;
+	private String spotifyUsername = "";
+	private String spotifyPassword = "";
 	private String pandoraUsername = "";
 	private String pandoraPassword = "";
 	
 	Secrets() throws Exception {
 		Scanner sc = new Scanner(System.in);
 		getClientInfo(sc);
+		getSpotifyInfo(sc);
 		getPandoraInfo(sc);
 		sc.close();
 	}
@@ -34,6 +37,15 @@ public class Secrets {
 		}
 	}
 	
+	void getSpotifyInfo(Scanner sc) throws Exception {
+		System.out.print("Enter your Spotify username: ");
+		spotifyUsername = sc.nextLine();
+		System.out.print("Enter your Spotify password: ");
+		Console console = System.console();				
+		char [] pwd = console.readPassword();				// Hides user input on the command line
+		spotifyPassword = new String(pwd);
+	}
+	
 	void getPandoraInfo(Scanner sc) throws Exception {
 		System.out.print("Enter your Pandora username: ");
 		pandoraUsername = sc.nextLine();
@@ -49,6 +61,14 @@ public class Secrets {
 	
 	String getClientSecret() {
 		return clientSecret;
+	}
+	
+	String getSpotifyUsername() {
+		return spotifyUsername;
+	}
+	
+	String getSpotifyPassword() {
+		return spotifyPassword;
 	}
 	
 	String getPandoraUsername() {
