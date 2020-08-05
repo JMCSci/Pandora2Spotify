@@ -29,36 +29,8 @@ public class SpotifyAPI {
 	private int requests = 0;
 	private JSONObject json;
 	
-	SpotifyAPI() throws Exception {
-		authorization = new Authorization();			// Request Spotify Web API authorization
-		addCurrentUser();								// Retrieve current Spotify user data
-		createPlaylist();								// Create a new Spotify playlist
-		userPlaylists();								// Retrieve Spotify playlist ID
-		Secrets secrets = authorization.getSecrets();   // Pass secrets instance to PandoraRequest for username & password
-		pandora = new PandoraRequests(secrets);			// Retrieve Pandora data
-		int size = pandora.formattedSongs.size();		// Gets the length of the songs array
-		for(int i = 0; i < size; i++) {
-			String jsonString = searchForItem(pandora.getSongs());	// Get JSON response
-			pandora.parseID(jsonString);					// Parse response for track id and adds to id queue
-			Thread.sleep(1500);
-		}
-		// ADD SONGS TO PLAYLIST
-		/* While loop that checks if id queue is empty
-		 * If statement that checks size of remaining queue
-		 * If it is, then pop 100 items off the queue with a for loop
-		 * Use it to create JSON array
-		 * Array will be used in POST request to add songs
-		 */
-		int count = 0;
-		int totalSongs = pandora.idListSize();
-		while(pandora.idListSize() > 0) {
-			System.out.println("Song list size: " + pandora.idListSize());
-			count += 1;
-			String songs = createJSONArray();
-			addToPlaylist(songs);
-			Thread.sleep(1250);
-			System.out.print(count + " of " + totalSongs + " added to playlist" + "\r");
-		}
+	SpotifyAPI(Authorization authorization, PandoraRequests pandora, Secrets secrets) throws Exception {
+		this.authorization = authorization;			// Request Spotify Web API authorization
 	}
 	
 	// addCurrentUser: Adds current user data to HashMap

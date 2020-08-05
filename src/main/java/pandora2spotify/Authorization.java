@@ -25,15 +25,11 @@ public class Authorization {
 	Map<String, String> auth = new HashMap<String, String>();
 	private HashMap<String, String> refreshMap;
 	private HashMap<String, String> tokens;
-	public Secrets secrets;
+	private Secrets secrets;
 
 	
-	Authorization() throws Exception {
-		secrets = new Secrets();
-		createState();			// Create state - optional protection against attacks such as cross-site request forgery
-		getRequest();			// Request authorization to access data
-		authorization();		// Save authorization code and state to hash map - used to request access token
-		requestAccessTokens();	// Obtains access and refresh tokens
+	Authorization(Secrets secrets) throws Exception {
+		this.secrets = secrets;
 	}
 	
 	// createState: Randomly generated alphanumeric string for security -- length 11
@@ -107,8 +103,8 @@ public class Authorization {
 			/* APP AUTHORIZATION DENIED
 			 * Code variable will not have "code" in it if user does not accept 
 			 * URL/code variable will contain redirect URL - https://www.spotify.com */
-			System.out.println("\nSpotify app authorization denied");
-			System.out.println("The program will now exit");
+			System.out.println("\n*** Spotify app authorization denied ***");
+			System.out.println("The program will now exit\n");
 			System.exit(-1);
 		}		
 	}

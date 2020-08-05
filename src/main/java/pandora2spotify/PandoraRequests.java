@@ -41,10 +41,6 @@ public class PandoraRequests {
 	
 	PandoraRequests(Secrets secrets) throws Exception {
 		pandoraSecrets = secrets;
-		retrieveThumbsUp();		// Uses browser to get thumbs up tracks from Pandora by refreshing page and retrieving POST responses
-		getTR();				// Parse POST responses for TR objects containing tracks
-		jsonToList();			// Uses TR id to get tracks located in JSON responses
-		formatForQuery();		// Format the strings from songs list for use in Spotify track search		
 	}
 	
 	void retrieveThumbsUp() throws Exception {

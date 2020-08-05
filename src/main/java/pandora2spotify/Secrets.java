@@ -13,17 +13,18 @@ public class Secrets {
 	private String pandoraPassword = "";
 	
 	Secrets() throws Exception {
-		Scanner sc = new Scanner(System.in);
-		getClientInfo(sc);
-		getSpotifyInfo(sc);
-		getPandoraInfo(sc);
-		sc.close();
+
 	}
 	
-	void getClientInfo(Scanner sc) throws Exception {
-		String fileLocation = "";
+	void userSecrets() throws Exception {
+		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter location of your client id and client secret: ");
+		String fileLocation = "";
 		fileLocation = sc.nextLine();
+		getClientSecrets(sc, fileLocation);
+	}
+	
+	void getClientSecrets(Scanner sc, String fileLocation) throws Exception {
 		File file = new File(fileLocation);
 		if(file.exists()) {
 			Scanner fileInput = new Scanner(file);
@@ -35,6 +36,7 @@ public class Secrets {
 			sc.close();
 			System.exit(-1);
 		}
+		getSpotifyInfo(sc);
 	}
 	
 	void getSpotifyInfo(Scanner sc) throws Exception {
@@ -44,6 +46,7 @@ public class Secrets {
 		Console console = System.console();				
 		char [] pwd = console.readPassword();				// Hides user input on the command line
 		spotifyPassword = new String(pwd);
+		getPandoraInfo(sc);
 	}
 	
 	void getPandoraInfo(Scanner sc) throws Exception {
@@ -53,6 +56,7 @@ public class Secrets {
 		Console console = System.console();				
 		char [] pwd = console.readPassword();				// Hides user input on the command line
 		pandoraPassword = new String(pwd);
+		sc.close();
 	}
 	
 	String getClientID() {
