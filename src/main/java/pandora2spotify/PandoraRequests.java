@@ -9,6 +9,7 @@ package pandora2spotify;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.Inet4Address;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -38,6 +40,7 @@ public class PandoraRequests {
 	ArrayDeque<String> ids = new ArrayDeque<String>();
 	ArrayDeque<String> formattedSongs = new ArrayDeque<String>();
 	Secrets pandoraSecrets;
+	int songTotal = 0;
 	
 	PandoraRequests(Secrets secrets) throws Exception {
 		pandoraSecrets = secrets;
@@ -50,7 +53,6 @@ public class PandoraRequests {
 		BrowserMobProxy proxy = new BrowserMobProxyServer();		   // Proxy server used to get HAR files using Selenium 
 		proxy.setTrustAllServers(true);
 		proxy.start();
-		
 		Proxy seleniumProxy = ClientUtil.createSeleniumProxy(proxy);
 		
 		String hostIp = Inet4Address.getLocalHost().getHostAddress();
@@ -60,9 +62,15 @@ public class PandoraRequests {
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(CapabilityType.PROXY, seleniumProxy);
 		 
+		java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF); // suppress Selenium logs
 		System.setProperty("webdriver.gecko.driver", "/Users/jasonmoreau/Desktop/WebDriver/bin/geckodriver");
+		System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE, "true");
+		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, "/Users/jasonmoreau/Desktop/MARIONETTE");
+		FirefoxBinary firefoxbinary = new FirefoxBinary();
+		firefoxbinary.addCommandLineOptions("--headless");	// Browser headless mode
 		FirefoxOptions options = new FirefoxOptions();
 		options.merge(capabilities);
+		options.setBinary(firefoxbinary);
 		WebDriver driver = new FirefoxDriver(options);
 		
 		/* Go to the login in page */
@@ -73,28 +81,59 @@ public class PandoraRequests {
 		driver.findElement(By.name("password")).sendKeys(pandoraSecrets.getPandoraPassword());	// Enters password
 		driver.findElement(By.className("FormButtonSubmit")).click();							// Clicks log-in
 		Thread.sleep(5000);																		// Waits for page to load
+		driver.get("https://www.pandora.com/profile/tarius12");	// Goes to profile page	
+		/* GET HAR FILES FROM PROFILE PAGE */
+		proxy.setHarCaptureTypes(CaptureType.RESPONSE_CONTENT);
+		proxy.newHar("Pandora Get Profile");
+		Thread.sleep(2500);
+		List<HarEntry> getProfile = proxy.getHar().getLog().getEntries();
+
+		/* GET RETRIEVE JSON RESPONSE CONTAINING THUMBS UP INFO */
+		String profileResponse = "";
+		int refreshTotal = 0;
+		
+		for(HarEntry entry: getProfile) {
+			 if(entry.getRequest().getUrl().matches("https://www.pandora.com/api/v1/listener/getProfile")){
+				   profileResponse = entry.getResponse().getContent().getText().toString();
+				   // Send pandoraUser to a method to extract the positiveFeedBack count
+				   // Send to another method to round up
+				   // Round up and insert it into the loop counter
+				   // REMEMBER THE TR objects contain 10 songs
+				   // So 1926 songs would round up to 1930
+				   // Divide it by 10 and thats how many times you have to refresh - 193 times
+				   break;
+			  }
+		}
+		
+		refreshTotal = getThumbsCount(profileResponse);		// Retrieves and calculates refresh/loop total
+		System.out.println("\nTotal Pandora \"Thumbs Up\" tracks: " + songTotal);
+		
+		/* Scroll down Pandora page and get HAR files */
 		driver.get("https://www.pandora.com/profile/thumbs/tarius12");							// Goes to Thumbs Up page
-		/* Scrolls down */
-		/*
-		 * THIS IS IN A LOOP 
-		 * YOU ALSO MUST KNOW WHEN YOU REACH THE BOTTOM OF THE PAGE 
-		 */
 		Thread.sleep(2500);
 		JavascriptExecutor js =(JavascriptExecutor) driver;
 		driver.manage().window().maximize();
 		proxy.setHarCaptureTypes(CaptureType.RESPONSE_CONTENT);
 		proxy.newHar("Pandora Thumbs Up");
-		int size = 1;
-		for(int i = 0; i < size; i++) {	// a loop of 5 had 37 TR's (on average each TR has 10 tracks)
-			System.out.print("Page refresh: " + (i + 1) + " of " + size + "\r");
-			js.executeScript("window.scrollBy(0,1324)");					// scroll down
-			Thread.sleep(1500);
-			proxy.newPage(); 						// next page - HAR
-		}
-			
-		List<HarEntry> entries = proxy.getHar().getLog().getEntries();
-		System.out.println("Number of tracks: " + entries.size());
 		
+		if(refreshTotal > 0) {
+			for(int i = 0; i < refreshTotal; i++) {	
+				// a loop of 5 had 37 TR's (on average each TR has 10 tracks)
+				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal + "\r");
+				js.executeScript("window.scrollBy(0,1324)");					// scroll down
+				Thread.sleep(1500);
+				proxy.newPage(); 						// next page - HAR
+			}
+		} else {
+			System.out.println("Your Pandora profile has no thumbed up songs.");
+			System.out.println("The program will now exit");
+			proxy.stop();
+			driver.close();
+			System.exit(-1);
+		}
+	
+		List<HarEntry> entries = proxy.getHar().getLog().getEntries();
+		/* GET RETRIEVE JSON RESPONSE CONTAINING TR INFO */
 		for (HarEntry entry : entries) {
 			/* Only add the POST requests */
 			   if(entry.getRequest().getUrl().matches("https://www.pandora.com/api/v4/catalog/annotateObjectsSimple")){
@@ -103,17 +142,39 @@ public class PandoraRequests {
 				   // TR represents each JSON array object
 				   // A JSON array object is a track and its metadata
 				   postResponse.add(entry.getResponse().getContent().getText().toString());
-			   }
+			   } 
 			}
 		proxy.stop();
 		driver.close();
 	}
 	
+	
+	/* getThumbsCount: Parses JSON response for "Thumbs Up" count and returns integer
+	 * Located in JSON as positiveFeedbackCount */
+	int getThumbsCount(String profileResponse) {
+		JSONObject obj = new JSONObject(profileResponse);
+		int totalThumbs = 0;
+		int refreshTotal = 0;
+		songTotal = totalThumbs = Integer.parseInt(obj.get("positiveFeedbackCount").toString());
+		refreshTotal = roundUp(totalThumbs, refreshTotal);
+		return refreshTotal;
+	}
+	
+	// roundUp: Rounds totalThumbs up to the nearest tens place
+	int roundUp(int totalThumbs, int refreshTotal) {
+		if(totalThumbs > 0) {
+			int roundUp = 0;
+			roundUp = (totalThumbs % 10) - 10;
+			totalThumbs = Math.abs(roundUp) + totalThumbs;
+			refreshTotal = totalThumbs / 10;
+		}
+		return refreshTotal;
+	}
+	
 	/* Gets the TR objects
 	 * Each TR object represents a track 
 	 * TR's are used when looking in JSON response to retrieve track info 
-	 * Track info includes: track and artist names
-	 */
+	 * Track info includes: track and artist names */
 	void getTR() {
 		String temp;
 		int postResponseSize = postResponse.size();
@@ -137,7 +198,6 @@ public class PandoraRequests {
 			}
 			i++;
 		}
-		System.out.println("Total: " + tr.size());
 	}
 	
 	/* Convert responses in list to JSON object 
@@ -176,7 +236,6 @@ public class PandoraRequests {
 	 *  For use in Spotify GET request track search
 	 */
 	 void formatForQuery() {
-		 System.out.println(songs.size());
 			Iterator<String> iterator = songs.iterator();
 			while(iterator.hasNext()) {
 				String x = iterator.next().replaceAll("\\([^()]*\\)", "");
@@ -185,7 +244,7 @@ public class PandoraRequests {
 				formattedSongs.add(x);
 			}
 			songs.clear();		// Clear the songs list after formatting
-			System.out.println(formattedSongs.size());
+			System.out.println("Total songs: " + formattedSongs.size());
 	}
 	 
 	 int songListSize() {

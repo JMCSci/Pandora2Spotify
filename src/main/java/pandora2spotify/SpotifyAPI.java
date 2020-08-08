@@ -31,6 +31,7 @@ public class SpotifyAPI {
 	
 	SpotifyAPI(Authorization authorization, PandoraRequests pandora, Secrets secrets) throws Exception {
 		this.authorization = authorization;			// Request Spotify Web API authorization
+		this.pandora = pandora;
 	}
 	
 	// addCurrentUser: Adds current user data to HashMap
@@ -64,7 +65,6 @@ public class SpotifyAPI {
 			currentUser.put("product", json.get("product").toString());
 			currentUser.put("type", json.get("type").toString());
 			currentUser.put("followers", nestedFollow.get("total").toString());
-			System.out.println(currentUser);
 			reader.close();
 		} else {
 			System.out.println("Current user data has already been retrieved");
@@ -79,7 +79,6 @@ public class SpotifyAPI {
 		if(requests >= 1) {			// Automatically ask for for refresh tokens after first API request
 			authorization.requestRefresh();
 		}
-		System.out.println(authorization.getToken("token_type") + "\n" + authorization.getToken("access_token"));
 		URL url = new URL("https://api.spotify.com/v1/users/" + currentUser.get("id") + "/playlists");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
@@ -201,8 +200,7 @@ public class SpotifyAPI {
 		DataOutputStream out = new DataOutputStream(conn.getOutputStream());
 		out.write(postRequest.getBytes());
 		out.close();
-		
-//		System.out.println(conn.getResponseCode());
+		conn.getResponseCode();			// Required
 	}
 	
 	
@@ -234,12 +232,12 @@ public class SpotifyAPI {
 			System.out.println("at least 100");
 			// Pop 100 tracks from the queue
 			for(int i = 0; i < 100; i++) {
-				arr.put(i, prefix +  pandora.getIds());		// Add 100 tracks to JSON array
+				arr.put(i, prefix + pandora.getIds());		// Add 100 tracks to JSON array
 			}
 		} else {
 			// Pop everything off of the queue
 			for(int i = 0; i < size; i++) {
-				arr.put(i, prefix +  pandora.getIds());		// Add remaining tracks to JSON array
+				arr.put(i, prefix + pandora.getIds());		// Add remaining tracks to JSON array
 			}
 		}
 		JSONObject o = new JSONObject();					// Create JSONObject

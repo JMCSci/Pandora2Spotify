@@ -10,9 +10,12 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -70,8 +73,17 @@ public class Authorization {
 			appendedLine.append(line + "\n");
 		}	
 
+		java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF); // suppress Selenium logs
 		System.setProperty("webdriver.gecko.driver", "/Users/jasonmoreau/Desktop/WebDriver/bin/geckodriver");
-		FirefoxDriver driver = new FirefoxDriver();
+		System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE, "true");
+		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, "/Users/jasonmoreau/Desktop/MARIONETTE");
+		FirefoxBinary firefoxbinary = new FirefoxBinary();
+		firefoxbinary.addCommandLineOptions("--headless");	// Browser headless mode
+		FirefoxOptions options = new FirefoxOptions();
+		options.setBinary(firefoxbinary);
+		FirefoxDriver driver = new FirefoxDriver(options);
+		
+		options.setBinary(firefoxbinary);
 		driver.get(conn.getURL().toString());
 		
 		/* Automatically fill in Spotify user information */

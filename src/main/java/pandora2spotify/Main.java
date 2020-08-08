@@ -7,11 +7,13 @@ public class Main {
 		secrets.userSecrets();
 		/* START PANDORA USER REQUESTS */
 		PandoraRequests pandora = new PandoraRequests(secrets);
+		System.out.println("\n*** Retrieving Pandora songs ***\n");
 		pandora.retrieveThumbsUp();				// Uses browser to get thumbs up tracks from Pandora by refreshing page and retrieving POST responses
 		pandora.getTR();						// Parse POST responses for TR objects containing tracks
 		pandora.jsonToList();					// Uses TR id to get tracks located in JSON responses
 		pandora.formatForQuery();				// Format the strings from songs list for use in Spotify track search
 		/* REQUEST SPOTIFY AUTHORIZATION */
+		System.out.println("\n*** Requesting Spotify access ***\n");
 		Authorization authorization = new Authorization(secrets);
 		authorization.createState();			// Create state - optional protection against attacks such as cross-site request forgery
 		authorization.getRequest();				// Request authorization to access data
@@ -19,13 +21,16 @@ public class Main {
 		authorization.requestAccessTokens();	// Obtains access and refresh tokens
 		/* START SPOTIFY USER PROFILE REQUESTS */
 		SpotifyAPI api = new SpotifyAPI(authorization, pandora, secrets);
+		System.out.println("\n*** Setting up Spotify playlist ***\n");
 		api.addCurrentUser();					// Retrieve current Spotify user data
 		api.createPlaylist();					// Create a new Spotify playlist
 		api.userPlaylists();					// Retrieve Spotify playlist ID
 		/* SEARCH SPOTIFY FOR SONGS */
+		System.out.println("\n*** Searching for tracks on Spotify ***\n");
 		searchSpotify(pandora, api);
 		/* ADD SONGS TO SPOTIFY PLAYLIST */
-		addTrack(pandora, api);
+		System.out.println("\n*** Adding songs to Spotify playlist ***\n");
+		addTracks(pandora, api);
 		/* END OF PROGRAM */
 		System.out.println("Your Pandora songs have been successfully migrated to Spotify");
 	}
@@ -43,7 +48,7 @@ public class Main {
 	
 	// addTrack: Creates JSON array and adds songs to Spotify playlist
 	// Creates a JSONArray using at most 100 songs per request and adds tracks to playlist
-	public static void addTrack(PandoraRequests pandora, SpotifyAPI api) throws Exception {
+	public static void addTracks(PandoraRequests pandora, SpotifyAPI api) throws Exception {
 		/* While loop that checks if id queue is empty
 		 * If statement that checks size of remaining queue
 		 * If it is, then pop 100 items off the queue with a for loop
@@ -55,7 +60,7 @@ public class Main {
 			count += 1;
 			String songs = api.createJSONArray();
 			api.addToPlaylist(songs);
-			Thread.sleep(1250);
+			Thread.sleep(2000);
 			System.out.print(count + " of " + totalSongs + " added to playlist" + "\r");
 		}
 	}
