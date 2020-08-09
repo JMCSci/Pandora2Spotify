@@ -110,6 +110,16 @@ public class PandoraRequests {
 		refreshTotal = getThumbsCount(profileResponse);		// Retrieves and calculates refresh/loop total
 		System.out.println("\nTotal Pandora \"Thumbs Up\" tracks: " + songTotal);
 		
+		
+		/*
+		 * 
+		 * FOR TESTING ONLY!!!
+		 * 
+		 * 
+		 */
+		
+		
+		
 		/* Scroll down Pandora page and get HAR files */
 		driver.get("https://www.pandora.com/profile/thumbs/tarius12");							// Goes to Thumbs Up page
 		Thread.sleep(2500);
@@ -121,10 +131,10 @@ public class PandoraRequests {
 		if(refreshTotal > 0) {
 			for(int i = 0; i < refreshTotal; i++) {	
 				// a loop of 5 had 37 TR's (on average each TR has 10 tracks)
-				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal * 2+ "\r");
+				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal + "\r");
 				js.executeScript("window.scrollBy(0,1324)");					// scroll down
-				Thread.sleep(1500);
-				proxy.newPage(); 						// next page - HAR
+				Thread.sleep(700);	// got 1000 song @ 800
+//				proxy.newPage(); 						// next page - HAR
 			}
 		} else {
 			System.out.println("Your Pandora profile has no thumbed up songs.");
@@ -133,6 +143,9 @@ public class PandoraRequests {
 			driver.close();
 			System.exit(-1);
 		}
+		
+		System.out.println("Finishing up Pandora song retrieval");
+		Thread.sleep(30000);
 	
 		List<HarEntry> entries = proxy.getHar().getLog().getEntries();
 		/* GET RETRIEVE JSON RESPONSE CONTAINING TR INFO */
@@ -241,7 +254,8 @@ public class PandoraRequests {
 			Iterator<String> iterator = songs.iterator();
 			while(iterator.hasNext()) {
 				String x = iterator.next().replaceAll("\\([^()]*\\)", "");
-				x = x.replaceAll("[#':;\"]", "");
+				x = x.replaceAll("[<>#;$\\\\/\"]", "");
+				x = x.replaceAll(Character.toString(8217), "");
 				x = x.replaceAll(" ", "%20");
 				formattedSongs.add(x);
 			}
@@ -255,6 +269,10 @@ public class PandoraRequests {
 	 
 	 int idListSize() {
 		 return ids.size();
+	 }
+	 
+	 boolean idListIsEmpty() {
+		 return ids.isEmpty();
 	 }
 	 
 	 String getSongs() {
@@ -277,12 +295,15 @@ public class PandoraRequests {
 		JSONObject obj = new JSONObject(jsonString);						// Put paging object into JSONObject
 		JSONObject a = new JSONObject(obj.get("tracks").toString());		// Get track object
 		JSONArray arr = new JSONArray(a.getJSONArray("items").toString());	// Get JSON array objects from items
-		JSONObject b = new JSONObject(arr.get(0).toString());				// Convert objects into JSONObject
-		if(b.has("id")) {
-			ids.add(b.get("id").toString());									// Get the id value	
-		} else {
-			System.out.println("Track not added");
-			System.out.println("Track: " + b.get("name") + " Artists: " + b.get("artist"));
+		if(!arr.isEmpty()) {
+			JSONObject b = new JSONObject(arr.get(0).toString());				// Convert objects into JSONObject
+			if(b.has("id")) {
+				ids.add(b.get("id").toString());								// Get the id value	
+			} else {
+				System.out.println("Track not added");
+				System.out.println(jsonString);
+				System.out.println("Track: " + b.get("name") + " Artists: " + b.get("artist"));
+			}
 		}
 		
 	}

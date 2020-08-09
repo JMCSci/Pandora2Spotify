@@ -35,14 +35,18 @@ public class Main {
 		System.out.println("Your Pandora songs have been successfully migrated to Spotify");
 	}
 	
-	// searchSpotify: Uses "Thumbs Up" songs in list to searches Spotify for tracks 
+	// searchSpotify: Uses "Thumbs Up" songs in list to search Spotify for tracks 
 	// Parses the JSON responses and saves the track id to a queue
 	public static void searchSpotify(PandoraRequests pandora, SpotifyAPI api) throws Exception {
 		int size = pandora.formattedSongs.size();						// Gets the length of the songs array
+		int count = 0;
+		ProgressBar progressBar = new ProgressBar();
 		for(int i = 0; i < size; i++) {
 			String jsonString = api.searchForItem(pandora.getSongs());	// Get JSON response
 			pandora.parseID(jsonString);								// Parse response for track id and adds to id queue
-			Thread.sleep(1500);
+			Thread.sleep(900);
+			progressBar.displaySmall(count, size);
+			count++;
 		}
 	}
 	
@@ -57,7 +61,8 @@ public class Main {
 		ProgressBar progressBar = new ProgressBar();
 		int count = 0;
 		int totalSongs = pandora.idListSize();
-		while(pandora.idListSize() > 0) {
+		System.out.println("\nTotal songs to transfer: " + totalSongs + "\n");
+		while(!pandora.idListIsEmpty()) {
 			if(pandora.idListSize() >= 100) {
 				count += 100;
 			} else {
@@ -66,8 +71,7 @@ public class Main {
 			String songs = api.createJSONArray();
 			api.addToPlaylist(songs);
 			Thread.sleep(2500);
-			progressBar.display(count, totalSongs);
-			System.out.print(count + " of " + totalSongs + " added to playlist" + "\r");
+			progressBar.displaySmall(count, totalSongs);
 		}
 	}
 

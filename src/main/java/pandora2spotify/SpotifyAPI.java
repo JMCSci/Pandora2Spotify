@@ -145,7 +145,7 @@ public class SpotifyAPI {
 		int size = arr.length();													// Get the length of the array
 		for(int i = 0; i < size; i++) {
 			JSONObject obj = new JSONObject(arr.get(i).toString());	   			    // Add array object to JSON object
-			if(obj.get("name").toString().matches("Pandora Liked Songs")) {  	// Get the name in this JSON
+			if(obj.get("name").toString().matches("Pandora Liked Songs")) {  	    // Get the name in this JSON
 				playlistID = obj.get("id").toString();								// Get the playlist id
 				currentUser.put("playlist_id", playlistID);							// add playlist id to hash map
 				return true;
@@ -203,23 +203,6 @@ public class SpotifyAPI {
 		conn.getResponseCode();			// Required
 	}
 	
-	
-	/* Creates a JSON array to send as POST request when adding songs to playlist */
-//	String createJSONArray() {
-//		JSONArray arr = new JSONArray();				// Create an empty JSONArray
-//		String prefix = "spotify:track:";
-//		/* This is will be in a loop with a maxiumum of 100 tracks */
-//		arr.put(0, prefix + "PnzycXmUIhzQbSfQlw4uJD");		// Add tracks
-//		arr.put(1, prefix + "VD8Fzurt4xHCPh8uETFxjz");		// Add tracks
-//		arr.put(2, prefix + "nM7r70zyXRfqinWUkVLdy2");		// Add tracks
-//		JSONObject o = new JSONObject();					// Create JSONObject
-//		o.put("uris", arr);									// Add the JSONArray to the JSONObject
-//		String jsonArray = o.toString();					// Convert it to a string
-//		jsonArray = jsonArray.replaceAll("//s","");			// Remove whitespace
-//		System.out.println(jsonArray);						// Return the string to addToPlaylist method
-//		return jsonArray;
-//	}
-	
 	/* Creates a JSON array to send as POST request when adding songs to playlist */
 	String createJSONArray() {
 		JSONArray arr = new JSONArray();				// Create an empty JSONArray
@@ -228,8 +211,7 @@ public class SpotifyAPI {
 		// Get the size of ids array
 		int size = pandora.idListSize();
 		
-		if(size / 100 >= 0) {
-			System.out.println("at least 100");
+		if(size / 100 > 0) {
 			// Pop 100 tracks from the queue
 			for(int i = 0; i < 100; i++) {
 				arr.put(i, prefix + pandora.getIds());		// Add 100 tracks to JSON array
