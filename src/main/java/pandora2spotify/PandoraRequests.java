@@ -134,7 +134,7 @@ public class PandoraRequests {
 				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal + "\r");
 				js.executeScript("window.scrollBy(0,1324)");					// scroll down
 				Thread.sleep(700);	// got 1000 song @ 800
-//				proxy.newPage(); 						// next page - HAR
+//				proxy.newPage(); 						// next page - HAR 
 			}
 		} else {
 			System.out.println("Your Pandora profile has no thumbed up songs.");

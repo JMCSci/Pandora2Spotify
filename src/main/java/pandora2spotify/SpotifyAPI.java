@@ -212,19 +212,19 @@ public class SpotifyAPI {
 		int size = pandora.idListSize();
 		
 		if(size / 100 > 0) {
-			// Pop 100 tracks from the queue
+			// Remove 100 tracks from the list
 			for(int i = 0; i < 100; i++) {
 				arr.put(i, prefix + pandora.getIds());		// Add 100 tracks to JSON array
 			}
 		} else {
-			// Pop everything off of the queue
+			// Remove remaining tracks from the list
 			for(int i = 0; i < size; i++) {
 				arr.put(i, prefix + pandora.getIds());		// Add remaining tracks to JSON array
 			}
 		}
-		JSONObject o = new JSONObject();					// Create JSONObject
-		o.put("uris", arr);									// Add the JSONArray to the JSONObject
-		String jsonArray = o.toString();					// Convert it to a string
+		JSONObject obj = new JSONObject();					// Create JSONObject
+		obj.put("uris", arr);									// Add the JSONArray to the JSONObject
+		String jsonArray = obj.toString();					// Convert it to a string
 		jsonArray = jsonArray.replaceAll("//s","");			// Remove whitespace						
 		return jsonArray;									// Return the string to addToPlaylist method
 	}
