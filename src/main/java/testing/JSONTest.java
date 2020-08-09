@@ -11,7 +11,7 @@ public class JSONTest {
 		System.out.println((1923 % 10));
 		
 		// 10 songs
-		int roundUp = (97 % 10) - 10;
+		int roundUp = (97 % 10) - 8;
 		System.out.println(roundUp);
 		totalThumbs = Math.abs(roundUp) + 97;
 		int refreshTotal = totalThumbs / 10;
@@ -46,13 +46,13 @@ public class JSONTest {
 		System.out.println("Refresh total: " + refreshTotal);
 		
 		roundUp(9999);
-		getThumbsCount();
+//		getThumbsCount();
 		
 	}
 	
 	// getThumbsCount: Parses JSON response for "Thumbs Up" count and returns integer
 	// Located in JSON as positiveFeedbackCount
-	public static int getThumbsCount() {
+	public static int getThumbsCount(String profileReponse) {
 		int songTotal = 0;
 		int totalThumbs = 0;
 		String profileResponse = "";

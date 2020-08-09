@@ -54,13 +54,19 @@ public class Main {
 		 * If it is, then pop 100 items off the queue with a for loop
 		 * Use it to create JSON array
 		 * Array will be used in POST request to add songs */
+		ProgressBar progressBar = new ProgressBar();
 		int count = 0;
 		int totalSongs = pandora.idListSize();
 		while(pandora.idListSize() > 0) {
-			count += 1;
+			if(pandora.idListSize() >= 100) {
+				count += 100;
+			} else {
+				count += pandora.idListSize();
+			}
 			String songs = api.createJSONArray();
 			api.addToPlaylist(songs);
-			Thread.sleep(2000);
+			Thread.sleep(2500);
+			progressBar.display(count, totalSongs);
 			System.out.print(count + " of " + totalSongs + " added to playlist" + "\r");
 		}
 	}

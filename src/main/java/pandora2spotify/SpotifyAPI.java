@@ -228,7 +228,7 @@ public class SpotifyAPI {
 		// Get the size of ids array
 		int size = pandora.idListSize();
 		
-		if(size / 100 > 0) {
+		if(size / 100 >= 0) {
 			System.out.println("at least 100");
 			// Pop 100 tracks from the queue
 			for(int i = 0; i < 100; i++) {

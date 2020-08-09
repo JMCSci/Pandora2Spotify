@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.net.Inet4Address;
 import java.util.ArrayDeque;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Proxy;
@@ -37,8 +38,9 @@ public class PandoraRequests {
 	List<String> postResponse = new LinkedList<String>();
 	List<String> tr = new LinkedList<String>();
 	List<String> songs = new LinkedList<String>();
-	ArrayDeque<String> ids = new ArrayDeque<String>();
-	ArrayDeque<String> formattedSongs = new ArrayDeque<String>();
+	List<String> notAdded = new LinkedList<String>();
+	LinkedList<String> ids = new LinkedList<String>();
+	LinkedList<String> formattedSongs = new LinkedList<String>();
 	Secrets pandoraSecrets;
 	int songTotal = 0;
 	
@@ -119,7 +121,7 @@ public class PandoraRequests {
 		if(refreshTotal > 0) {
 			for(int i = 0; i < refreshTotal; i++) {	
 				// a loop of 5 had 37 TR's (on average each TR has 10 tracks)
-				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal + "\r");
+				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal * 2+ "\r");
 				js.executeScript("window.scrollBy(0,1324)");					// scroll down
 				Thread.sleep(1500);
 				proxy.newPage(); 						// next page - HAR
@@ -239,7 +241,7 @@ public class PandoraRequests {
 			Iterator<String> iterator = songs.iterator();
 			while(iterator.hasNext()) {
 				String x = iterator.next().replaceAll("\\([^()]*\\)", "");
-				x = x.replaceAll("'", "");
+				x = x.replaceAll("[#':;\"]", "");
 				x = x.replaceAll(" ", "%20");
 				formattedSongs.add(x);
 			}
@@ -264,12 +266,25 @@ public class PandoraRequests {
 		 return ids.removeFirst();
 	 }
 	 
-	 /* Parse JSON response for track id to be used when adding to playlist */
-	 void parseID(String jsonString) {
-			jsonString = jsonString.replaceAll("\\s", "");		// Remove whitespace
-			String [] tokens1 = jsonString.split("\"uri\":\"spotify:track:");
-			String [] tokens2 = tokens1[1].split("\"");
-			ids.add(tokens2[0]);
+	
+    /* Parse JSON response for track id to be used when adding to playlist 
+     * Paging object contains id
+	 * The offset-based paging object is a container for a set of objects. 
+	 * It contains a key called items (whose value is an array of the requested objects) 
+	 * Along with other keys like previous, next and limit that can be useful in future calls 
+	 */
+	void parseID(String jsonString) {
+		JSONObject obj = new JSONObject(jsonString);						// Put paging object into JSONObject
+		JSONObject a = new JSONObject(obj.get("tracks").toString());		// Get track object
+		JSONArray arr = new JSONArray(a.getJSONArray("items").toString());	// Get JSON array objects from items
+		JSONObject b = new JSONObject(arr.get(0).toString());				// Convert objects into JSONObject
+		if(b.has("id")) {
+			ids.add(b.get("id").toString());									// Get the id value	
+		} else {
+			System.out.println("Track not added");
+			System.out.println("Track: " + b.get("name") + " Artists: " + b.get("artist"));
+		}
+		
 	}
 	 	 
 }
