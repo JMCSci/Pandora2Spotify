@@ -223,7 +223,7 @@ public class SpotifyAPI {
 			}
 		}
 		JSONObject obj = new JSONObject();					// Create JSONObject
-		obj.put("uris", arr);									// Add the JSONArray to the JSONObject
+		obj.put("uris", arr);								// Add the JSONArray to the JSONObject
 		String jsonArray = obj.toString();					// Convert it to a string
 		jsonArray = jsonArray.replaceAll("//s","");			// Remove whitespace						
 		return jsonArray;									// Return the string to addToPlaylist method

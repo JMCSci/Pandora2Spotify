@@ -83,20 +83,24 @@ public class PandoraRequests {
 		driver.findElement(By.name("password")).sendKeys(pandoraSecrets.getPandoraPassword());	// Enters password
 		driver.findElement(By.className("FormButtonSubmit")).click();							// Clicks log-in
 		Thread.sleep(5000);																		// Waits for page to load
-		driver.get("https://www.pandora.com/profile/tarius12");	// Goes to profile page	
 		/* GET HAR FILES FROM PROFILE PAGE */
 		proxy.setHarCaptureTypes(CaptureType.RESPONSE_CONTENT);
 		proxy.newHar("Pandora Get Profile");
+		driver.get("https://www.pandora.com/profile/tarius12");		// Goes to profile page	
 		Thread.sleep(2500);
+		
 		List<HarEntry> getProfile = proxy.getHar().getLog().getEntries();
 
 		/* GET RETRIEVE JSON RESPONSE CONTAINING THUMBS UP INFO */
 		String profileResponse = "";
 		int refreshTotal = 0;
 		
+		System.out.println("SIZE: " + getProfile.size());
+		
 		for(HarEntry entry: getProfile) {
 			 if(entry.getRequest().getUrl().matches("https://www.pandora.com/api/v1/listener/getProfile")){
 				   profileResponse = entry.getResponse().getContent().getText().toString();
+				   System.out.println("RESPONSE: " + profileResponse);
 				   // Send pandoraUser to a method to extract the positiveFeedBack count
 				   // Send to another method to round up
 				   // Round up and insert it into the loop counter
@@ -105,6 +109,8 @@ public class PandoraRequests {
 				   // Divide it by 10 and thats how many times you have to refresh - 193 times
 				   break;
 			  }
+			 
+		
 		}
 		
 		refreshTotal = getThumbsCount(profileResponse);		// Retrieves and calculates refresh/loop total
@@ -118,25 +124,27 @@ public class PandoraRequests {
 		 * 
 		 */
 		
-		
+		// 910 = region
+		// 175680
+		// 175680 / 910 = 193.05
 		
 		/* Scroll down Pandora page and get HAR files */
-		driver.get("https://www.pandora.com/profile/thumbs/tarius12");							// Goes to Thumbs Up page
+		driver.get("https://www.pandora.com/profile/thumbs/tarius12");					// Goes to Thumbs Up page
 		Thread.sleep(2500);
-		JavascriptExecutor js =(JavascriptExecutor) driver;
+		JavascriptExecutor js = (JavascriptExecutor) driver;
 		driver.manage().window().maximize();
 		proxy.setHarCaptureTypes(CaptureType.RESPONSE_CONTENT);
 		proxy.newHar("Pandora Thumbs Up");
 		
 		if(refreshTotal > 0) {
-			for(int i = 0; i < refreshTotal; i++) {	
+			for(int i = 0; i < refreshTotal; i++) {
 				// a loop of 5 had 37 TR's (on average each TR has 10 tracks)
 				System.out.print("Page refresh: " + (i + 1) + " of " + refreshTotal + "\r");
-				js.executeScript("window.scrollBy(0,1324)");					// scroll down
-				Thread.sleep(700);	// got 1000 song @ 800
-//				proxy.newPage(); 						// next page - HAR 
+				js.executeScript("window.scrollBy(0,1000)");					// scroll down
+				Thread.sleep(2000);	// got 1000 song @ 800
+//				proxy.newPage(); 						// next page - HAR
 			}
-		} else {
+		} else { 
 			System.out.println("Your Pandora profile has no thumbed up songs.");
 			System.out.println("The program will now exit");
 			proxy.stop();
@@ -145,7 +153,7 @@ public class PandoraRequests {
 		}
 		
 		System.out.println("Finishing up Pandora song retrieval");
-		Thread.sleep(30000);
+		Thread.sleep(15000);
 	
 		List<HarEntry> entries = proxy.getHar().getLog().getEntries();
 		/* GET RETRIEVE JSON RESPONSE CONTAINING TR INFO */

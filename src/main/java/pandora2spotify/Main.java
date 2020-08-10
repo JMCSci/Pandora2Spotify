@@ -63,7 +63,7 @@ public class Main {
 		int totalSongs = pandora.idListSize();
 		System.out.println("\nTotal songs to transfer: " + totalSongs + "\n");
 		while(!pandora.idListIsEmpty()) {
-			if(pandora.idListSize() >= 100) {
+			if(pandora.idListSize() > 100) {
 				count += 100;
 			} else {
 				count += pandora.idListSize();
