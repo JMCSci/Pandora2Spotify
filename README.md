@@ -26,7 +26,7 @@ Once connected, you will receive two VERY important pieces of information: <b>Cl
 <i>Save both the Client ID and Client Secret to a plain text document. The Client ID should be on the first line and the Client Secret on the second line.</i>
 
 ### 1. How To Start The Program
-From the command line enter the following: java -jar <LOCATION OF FILE>
+From the command line enter the following: java -jar Pandora2Spotify.jar
   
   Mac example: java -jar /Users/JMCSci/Desktop/Pandora2Spotify.jar 
   
