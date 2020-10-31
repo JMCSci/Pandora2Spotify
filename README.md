@@ -26,6 +26,10 @@ Once connected, you will receive two VERY important pieces of information: <b>Cl
 <i>Save both the Client ID and Client Secret to a plain text document. The Client ID should be on the first line and the Client Secret on the second line.</i>
 
 ### 1. Program Launch
+From the command line enter the following: java -jar <LOCATION OF FILE>
+  Mac example: java -jar /Users/JMCSci/Desktop/Pandora2Spotify.jar 
+  Windows example: java -jar C:/My Computer/My Folder/Pandora2Spotify.jar
+
 At start of the program you will be prompted to enter the following:
 - The location of the Client ID/Client Secret plain text document
 - Spotify user name
