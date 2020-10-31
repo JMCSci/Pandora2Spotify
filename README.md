@@ -24,7 +24,7 @@ For more information on how the Spotify Web API works: https://developer.spotify
 
 Spotify Authorization Guide: https://developer.spotify.com/documentation/general/guides/authorization-guide/
 
-FYI: This program uses the <b> Refreshable user authorization code flow </b>
+<i>FYI: This program uses the <b> Refreshable user authorization code flow </b></i>
 
 ### Current Issues
 There appears to be a bug that will not migrate all of your songs if it is greater than 1200 tracks. I am currently working on a fix for it.
