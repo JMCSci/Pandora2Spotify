@@ -7,13 +7,19 @@ This program utilizes a created a custom wrapper for the Spotify Web API that gi
 - Add tracks to a playlist
 - Search for a track
 
+### Requirements
+- Mozilla Firefox 
+
 
 ### 0. Getting Started
+Before accessing and making changes to you account outside of Spotify, you must connect your Spoftify account to Spotfiy Developer:
+https://developer.spotify.com/dashboard/
 
+Once connected, you will receive two VERY important pieces of information: <b>Client ID</b> and <b>Client Secret</b>. Keep these in safe place, you will need it at the beginning of the program. The Client ID and Client Secret are used to make requests to the Spotfiy API.
 
 https://developer.spotify.com/documentation/web-api/quick-start/
 
-Before you can access the Spotify Web API you must have an active Pandora and Spotify account. 
+
 
 ### 1. Accessing the Spotify Web API
 To access the Spotfiy API endpoints and private data you must receive authorization. Once authorization is granted, each time a request is made to the server 
