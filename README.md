@@ -1,11 +1,14 @@
 # Pandora2Spotify
 Allows a user to migrate all of their "Thumbs Up" songs to from Pandora to Spotify.
 
+### Custom Spotify Web API Wrapper
 This program utilizes a created a custom wrapper for the Spotify Web API that gives the programmer the ability to do the following: 
 - Access a user account
 - Create a playlist
 - Add tracks to a playlist
 - Search for a track
+
+The class is included in the program but if you want to experient with it you can find it in a separate repo in my Guthub account: https://github.com/JMCSci/Spotify-Web-API-Wrapper
 
 ### Requirements
 - Mozilla Firefox 
