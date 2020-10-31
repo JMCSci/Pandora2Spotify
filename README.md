@@ -25,13 +25,14 @@ Once connected, you will receive two VERY important pieces of information: <b>Cl
 #### IMPORTANT!!! 
 <i>Save both the Client ID and Client Secret to a plain text document. The Client ID should be on the first line and the Client Secret on the second line.</i>
 
-### 1. Program Launch
+### 1. How To Start The Program
 From the command line enter the following: java -jar <LOCATION OF FILE>
   
   Mac example: java -jar /Users/JMCSci/Desktop/Pandora2Spotify.jar 
   
   Windows example: java -jar C:/My Computer/My Folder/Pandora2Spotify.jar
 
+### 2. Program Launch
 At start of the program you will be prompted to enter the following:
 - The location of the Client ID/Client Secret plain text document
 - Spotify user name
@@ -41,7 +42,7 @@ At start of the program you will be prompted to enter the following:
 
 Everything after this point will be handled automatically by the program (including access to your web browser for sign-in).
 
-### 2. Accessing the Spotify Web API
+### 3. Accessing the Spotify Web API
 To access the Spotfiy API endpoints and the user private data you must receive authorization. Once authorization is granted, each time a request is made to the server you will recieve refresh tokens. The custom API wrapper handles of the requests.
 
 For more information on how the Spotify Web API works: https://developer.spotify.com/documentation/web-api/quick-start/
