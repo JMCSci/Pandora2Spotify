@@ -21,6 +21,7 @@ Once connected, you will receive two VERY important pieces of information: <b>Cl
 To access the Spotfiy API endpoints and the users private data you must receive authorization. Once authorization is granted, each time a request is made to the server you will recieve refresh tokens. The user will not need to do anything and all requests are handled through the custom API wrapper.
 
 For more information on how the Spotify Web API works: https://developer.spotify.com/documentation/web-api/quick-start/
+
 Spotify Authorization Guide: https://developer.spotify.com/documentation/general/guides/authorization-guide/
 
 FYI: This program uses the <b> Refreshable user authorization code flow </b>
