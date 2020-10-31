@@ -27,7 +27,9 @@ Once connected, you will receive two VERY important pieces of information: <b>Cl
 
 ### 1. Program Launch
 From the command line enter the following: java -jar <LOCATION OF FILE>
+  
   Mac example: java -jar /Users/JMCSci/Desktop/Pandora2Spotify.jar 
+  
   Windows example: java -jar C:/My Computer/My Folder/Pandora2Spotify.jar
 
 At start of the program you will be prompted to enter the following:
