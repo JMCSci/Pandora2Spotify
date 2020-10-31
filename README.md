@@ -1,6 +1,8 @@
 # Pandora2Spotify
 Allows a user to migrate all of their "Thumbs Up" songs to from Pandora to Spotify.
 
+Technologies used: Java, Javascript, Maven, Selenium 
+
 ### Custom Spotify Web API Wrapper
 This program utilizes a created a custom wrapper for the Spotify Web API that gives the programmer the ability to do the following: 
 - Access a user account
@@ -31,7 +33,7 @@ At start of the program you will be prompted to enter the following:
 - Pandora user name
 - Pandora password
 
-Everything after this point will be handled automatically by the program.
+Everything after this point will be handled automatically by the program (including access to your web browser for sign-in).
 
 ### 2. Accessing the Spotify Web API
 To access the Spotfiy API endpoints and the user private data you must receive authorization. Once authorization is granted, each time a request is made to the server you will recieve refresh tokens. The custom API wrapper handles of the requests.
