@@ -15,7 +15,7 @@ This program utilizes a created a custom wrapper for the Spotify Web API that gi
 Before accessing and making changes to you account outside of Spotify, you must connect your Spotify account to Spotfiy Developer:
 https://developer.spotify.com/dashboard/
 
-Once connected, you will receive two VERY important pieces of information: <b>Client ID</b> and <b>Client Secret</b>. The Client ID and Client Secret are used to make requests to the Spotfiy API. Keep these in safe place, you will need it at the beginning of the program. 
+Once connected, you will receive two VERY important pieces of information: <b>Client ID</b> and <b>Client Secret</b>. The Client ID and Client Secret are used to make requests to the Spotfiy API. Keep these in a safe place, you will need it at the beginning of the program. 
 
 ### 1. Accessing the Spotify Web API
 To access the Spotfiy API endpoints and the users private data you must receive authorization. Once authorization is granted, each time a request is made to the server you will recieve refresh tokens. The user will not need to do anything and all requests are handled through the custom API wrapper.
